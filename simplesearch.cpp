@@ -1,25 +1,24 @@
 #define NOMINMAX
 
-#include "targetver.h"
-#include <iostream>
-#include "LuceneHeaders.h"
-#include "FilterIndexReader.h"
 #include "FileUtils.h"
+#include "FilterIndexReader.h"
+#include "LuceneHeaders.h"
 #include "MiscUtils.h"
-#include <chrono>
-#include <string>
-#include <iostream>
-#include <fstream>
+#include "targetver.h"
 #include <bsoncxx/builder/stream/document.hpp>
 #include <bsoncxx/json.hpp>
+#include <chrono>
+#include <codecvt>
+#include <exception>
+#include <fstream>
+#include <iostream>
+#include <locale>
 #include <mongocxx/client.hpp>
 #include <mongocxx/instance.hpp>
-#include <mongocxx/uri.hpp>
 #include <mongocxx/pool.hpp>
-#include <exception>
+#include <mongocxx/uri.hpp>
+#include <string>
 #include <thread>
-#include <codecvt>
-#include <locale>
 #define MAX_RECORDS 4000000
 #define RESULTS 20
 using namespace Lucene;
@@ -28,20 +27,22 @@ using mongocxx::cursor;
 std::wstring_convert<std::codecvt_utf8<wchar_t>> CONVERTER;
 mongocxx::options::find opts{};
 
-void setOptions(int max){
+void setOptions(int max)
+{
     opts.batch_size(max);
     opts.limit(max);
 }
 
 template <typename F, typename... ARGS>
 decltype(auto) dbcallfetch(int max, mongocxx::pool& pool, const std::string& dbname, const std::string& table,
-                           const std::string& query, const std::string& fields, F f, ARGS&&... args){
+    const std::string& query, const std::string& fields, F f, ARGS&&... args)
+{
 
     auto client = pool.acquire();
     bsoncxx::stdx::string_view view(query);
     auto filter = bsoncxx::from_json(view);
 
-    if (!fields.empty()){
+    if (!fields.empty()) {
         bsoncxx::stdx::string_view projection_view(fields);
         auto projection = bsoncxx::from_json(projection_view);
         opts.projection(static_cast<bsoncxx::document::value>(projection));
@@ -52,15 +53,16 @@ decltype(auto) dbcallfetch(int max, mongocxx::pool& pool, const std::string& dbn
     return f(x, std::forward<ARGS>(args)...);
 }
 
-void indexDB(const DirectoryPtr& ram){
+void indexDB(const DirectoryPtr& ram, const std::string& url)
+{
     auto start = std::chrono::high_resolution_clock::now();
     setOptions(MAX_RECORDS);
     auto analyzer = newLucene<StandardAnalyzer>(LuceneVersion::LUCENE_CURRENT);
     IndexWriterPtr writer = newLucene<IndexWriter>(ram, analyzer, true, IndexWriter::MaxFieldLengthUNLIMITED);
     size_t rows = 0;
-    auto lambda = [&writer,&rows](auto&& x){
-        for (const auto& r:x){
-            try{
+    auto lambda = [&writer, &rows](auto&& x) {
+        for (const auto& r : x) {
+            try {
                 auto doc = newLucene<Document>();
                 const std::string& country = r["Country"].get_utf8().value.to_string();
                 const std::string& city = r["City"].get_utf8().value.to_string();
@@ -70,15 +72,14 @@ void indexDB(const DirectoryPtr& ram){
                 doc->add(cityPtr);
                 writer->addDocument(doc);
                 ++rows;
-            }
-            catch (const std::exception& e){
+            } catch (const std::exception& e) {
                 std::cout << rows << ":" << e.what() << std::endl;
             }
         }
     };
     mongocxx::instance instance{};
-    mongocxx::pool pool{mongocxx::uri{"mongodb://localhost:27017/?minPoolSize=32&maxPoolSize=32&maxIdleTimeMS=20000"}};
-    dbcallfetch(MAX_RECORDS, pool, "development", "CITY", "{}", "", lambda);
+    mongocxx::pool pool{ mongocxx::uri{ url } };
+    dbcallfetch(MAX_RECORDS, pool, "dev_gini45", "CITY", "{}", "", lambda);
     std::cout << "indexed [" << rows << "] documents" << std::endl;
     auto end = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
@@ -91,9 +92,11 @@ void indexDB(const DirectoryPtr& ram){
     writer->close();
 }
 
-int main(){
+int main(int argc, char** argv)
+{
+    const std::string url = argv[1];
     auto ram = newLucene<RAMDirectory>();
-    indexDB(ram);
+    indexDB(ram, url);
     auto reader = IndexReader::open(ram, true);
     auto searcher = newLucene<IndexSearcher>(reader);
     Collection<String> fields = newCollection<String>(L"City");
@@ -101,9 +104,8 @@ int main(){
     auto parser = newLucene<QueryParser>(LuceneVersion::LUCENE_CURRENT, L"City", analyzer);
     parser->setEnablePositionIncrements(true);
 
-
-    while (true){
-        try{
+    while (true) {
+        try {
             std::string input;
             std::cout << "search: ";
             std::cin >> input;
@@ -117,17 +119,17 @@ int main(){
             auto end = std::chrono::high_resolution_clock::now();
             auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
 
-            for (uint32_t index = 0; index < numHits; ++index){
+            for (uint32_t index = 0; index < numHits; ++index) {
                 auto doc = searcher->doc(hits[index]->doc);
-                if (doc.get()){
+                if (doc.get()) {
                     std::wcout << doc->get(L"Country") << "\t" << doc->get(L"City") << std::endl;
                 }
             }
             std::cout << "search time(us)=" << duration.count() << std::endl;
 
-        }
-        catch (const std::exception& e){
-            std::cout << "search error" << ":" << e.what() << std::endl;
+        } catch (const std::exception& e) {
+            std::cout << "search error"
+                      << ":" << e.what() << std::endl;
         }
     }
     return 0;
