@@ -16,20 +16,22 @@ function checkFormat(output, format)
 }
 var contents = fs.readFileSync(process.argv[2]).toString();
 var output = papa.parse(contents,{header: true});
-let GOOGLE_FILE={};
-GOOGLE_FILE["Symbol"]="Symbol1";
-GOOGLE_FILE["Name"]="Name1";
-GOOGLE_FILE["Type"]="Type1";
-GOOGLE_FILE["Date"]="Date1";
-GOOGLE_FILE["Shares"]="Shares1";
-GOOGLE_FILE["Price"]="Price1";
-GOOGLE_FILE["Cashvalue"]="Cashvalue1";
-GOOGLE_FILE["Commission"]="Commission1";
-GOOGLE_FILE["Notes"]="Notes1";
-console.log(Object.keys(GOOGLE_FILE));
-let GOOGLE_KEYS = Object.keys(GOOGLE_FILE);
-let match = checkFormat(output, GOOGLE_KEYS);
-if (match)	
-	console.log("successfully matched file format:GOOGLE_FILE");
-else
-	console.log("unable to match format:GOOGLE_FILE");
+let GOOGLE_FILE={
+	"Symbol":"Symbol",
+	"Name":"Name",
+	"Symbol":"Symbol",
+	"Type":"Type",
+	"Date":"Date",
+	"Shares":"Shares",
+	"Price":"Price",
+	"Cashvalue":"Cashvalue",
+	"Commission":"Commission",
+	"Notes":"Notes" };
+
+	console.log(Object.values(GOOGLE_FILE));
+	let GOOGLE_KEYS = Object.values(GOOGLE_FILE);
+	let match = checkFormat(output, GOOGLE_KEYS);
+	if (match)	
+		console.log("successfully matched file format:GOOGLE_FILE");
+	else
+		console.log("unable to match format:GOOGLE_FILE");
