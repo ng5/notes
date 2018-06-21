@@ -10,38 +10,39 @@
   --light: #eee;
 }
 
-*+* {
+* + *{
   box-sizing: border-box;
+  margin: .5em 0;
 }
 
-@media (min-width: 35em) {
+@media(min-width:35em) {
   .col {
-    display: table-cell;
+      display: table-cell;
   }
   .\31 {
-    width: 5%;
+      width: 5%;
   }
   .\33 {
-    width: 22%;
+      width: 22%;
   }
   .\34 {
-    width: 30%;
+      width: 30%;
   }
   .\35 {
-    width: 40%;
+      width: 40%;
   }
   .\32 {
-    width: 15%;
+      width: 15%;
   }
   .row {
-    display: table;
+      display: table;
+      border-spacing: 1em 0;
   }
 }
 
 .w-100,
 .row {
   width: 100%;
-  margin: 0px;
 }
 
 .card:focus,
@@ -58,7 +59,7 @@ pre {
 
 a:hover,
 .btn:hover {
-  opacity: 0.6;
+  opacity: .6;
 }
 
 .c {
@@ -116,9 +117,10 @@ th {
 
 .btn {
   padding: 1em;
-  letter-spacing: 0.1em;
+  letter-spacing: .1em;
   text-transform: uppercase;
   background: white;
   border: solid;
-  font: 0.7em var(--font);
+  font: .7em var(--font);
+  cursor:pointer;
 }
