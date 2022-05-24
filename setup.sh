@@ -21,6 +21,7 @@ function buildEnv() {
   local envName="$1"
   local version="$2"
   # shellcheck disable=SC2155
+  rm -rf "$envDirectory/$envName"
   conda create -n "$envName" python="$version" -y
   git init "$envDirectory/$envName"
 }
@@ -40,7 +41,7 @@ function buildPackage() {
   python setup.py bdist_wheel
 }
 
-function buildAllPackages(){
+function buildAllPackages() {
   rm -rf "$DIR/build" "$DIR/dist" "$DIR/*.egg-info"
   buildPackage py37
   buildPackage py38
@@ -48,17 +49,12 @@ function buildAllPackages(){
   buildPackage py310
 }
 USAGE="Usage: Either 1) create conda environments (one time only): ./setup.sh -n  or 2) create package: ./setup.sh"
-while getopts ":n:" opt; do
-  case $opt in
-  n)
-    buildCleanPythonEnvs
-    exit 0
-    ;;
-  \?)
-    echo "Invalid option -$OPTARG" >&2
-    echo $USAGE
-    exit 1
-    ;;
-  esac
-done
-buildAllPackages
+if [ "$#" -eq 0 ]; then
+    buildAllPackages
+    exit
+fi
+if [ "$1" = "-n" ]; then
+  buildCleanPythonEnvs
+else
+  echo "$USAGE"
+fi
