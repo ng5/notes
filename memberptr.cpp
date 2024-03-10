@@ -1,9 +1,12 @@
 #define ANKERL_NANOBENCH_IMPLEMENT
+#include "include/types.h"
+#include "mapbox/eternal.hpp"
+#include "nanobench/nanobench.h"
+#include <benchmark/benchmark.h>
 #include <iostream>
-#include <mapbox/eternal.hpp>
-#include <nanobench/nanobench.h>
 #include <ostream>
 #include <variant>
+
 template<typename Class, typename T>
 struct PropertyImpl {
     constexpr explicit PropertyImpl(T Class::*aMember) : member{aMember} {}
@@ -27,17 +30,7 @@ struct S {
     int f8{};
     int f9{};
     int f10{};
-
-    constexpr static auto X = mapbox::eternal::hash_map<mapbox::eternal::string, PropertyImpl<S, int>>({{"f1", property(&S::f1)},
-                                                                                                        {"f2", property(&S::f2)},
-                                                                                                        {"f3", property(&S::f3)},
-                                                                                                        {"f4", property(&S::f4)},
-                                                                                                        {"f5", property(&S::f5)},
-                                                                                                        {"f6", property(&S::f6)},
-                                                                                                        {"f7", property(&S::f7)},
-                                                                                                        {"f8", property(&S::f8)},
-                                                                                                        {"f9", property(&S::f9)},
-                                                                                                        {"f10", property(&S::f10)}});
+    double f11{};
 
     constexpr static auto M = mapbox::eternal::hash_map<mapbox::eternal::string, int S::*>({{"f1", &S::f1},
                                                                                             {"f2", &S::f2},
@@ -49,7 +42,8 @@ struct S {
                                                                                             {"f8", &S::f8},
                                                                                             {"f9", &S::f9},
                                                                                             {"f10", &S::f10}});
-    const static std::unordered_map<std::string, int S::*> M2;
+    const static std::unordered_map<std::string, std::variant<int S::*, double S::*, std::string S::*>> M2;
+
     void apply(const std::string &key, int value) {
         if (key == "f1") f1 = value;
         if (key == "f2") f2 = value;
@@ -63,46 +57,66 @@ struct S {
         if (key == "f10") f10 = value;
     }
     friend std::ostream &operator<<(std::ostream &os, const S &s) {
-        os << "f1: " << s.f1 << " f2: " << s.f2 << " f3: " << s.f3 << " f4: " << s.f4 << " f5: " << s.f5 << " f6: " << s.f6 << " f7: " << s.f7 << " f8: " << s.f8 << " f9: " << s.f9 << " f10: " << s.f10;
+        os << "f1: " << s.f1 << " f2: " << s.f2 << " f3: " << s.f3 << " f4: " << s.f4 << " f5: " << s.f5 << " f6: " << s.f6 << " f7: " << s.f7 << " f8: " << s.f8 << " f9: " << s.f9 << " f10: " << s.f10 << " f11: " << s.f11;
         return os;
     }
 };
 
-const std::unordered_map<std::string, int S::*> S::M2 = {{"f1", &S::f1},
-                                                         {"f2", &S::f2},
-                                                         {"f3", &S::f3},
-                                                         {"f4", &S::f4},
-                                                         {"f5", &S::f5},
-                                                         {"f6", &S::f6},
-                                                         {"f7", &S::f7},
-                                                         {"f8", &S::f8},
-                                                         {"f9", &S::f9},
-                                                         {"f10", &S::f10}};
+const std::unordered_map<std::string, std::variant<int S::*, double S::*, std::string S::*>> S::M2 = {{"f1", &S::f1},
+                                                                                                      {"f2", &S::f2},
+                                                                                                      {"f3", &S::f3},
+                                                                                                      {"f4", &S::f4},
+                                                                                                      {"f5", &S::f5},
+                                                                                                      {"f6", &S::f6},
+                                                                                                      {"f7", &S::f7},
+                                                                                                      {"f8", &S::f8},
+                                                                                                      {"f9", &S::f9},
+                                                                                                      {"f10", &S::f10},
+                                                                                                      {"f11", &S::f11}};
 
 
-int main() {
-    S s;
-    ankerl::nanobench::Bench().minEpochIterations(1000000).run("static map access", [&] {
-        std::string field = "f10";
+namespace bm = benchmark;
+
+static void static_map_access(bm::State &state) {
+    S s{};
+    for (auto _: state) {
+        std::string field = "f7";
         s.*S::M.at(field.c_str()) = 1;
-        ankerl::nanobench::doNotOptimizeAway(s);
-    });
-    ankerl::nanobench::Bench().minEpochIterations(1000000).run("string member access", [&] {
-        std::string field = "f10";
-        s.apply(field, 1);
-        ankerl::nanobench::doNotOptimizeAway(s);
-    });
-    ankerl::nanobench::Bench().minEpochIterations(1000000).run("unordered_map access", [&] {
-        std::string field = "f10";
-        s.*S::M2.at(field) = 1;
-        ankerl::nanobench::doNotOptimizeAway(s);
-    });
-
-    ankerl::nanobench::Bench().minEpochIterations(1000000).run("direct access", [&] {
-        s.f10 = 1;
-        ankerl::nanobench::doNotOptimizeAway(s);
-    });
-
-
-    return 0;
+    }
 }
+static void direct_access(bm::State &state) {
+    S s{};
+    for (auto _: state)
+        s.f7 = 1;
+}
+static void unordered_map_access(bm::State &state) {
+    S s{};
+    for (auto _: state) {
+        std::string field = "f11";
+        if (auto it = S::M2.find(field); it != S::M2.end()) {
+            auto mptr = it->second;
+            if (it->second.index() == 0) {
+                s.*std::get<0>(it->second) = 1;
+            } else if (it->second.index() == 1) {
+                s.*std::get<1>(it->second) = 1.43323;
+            } else if (it->second.index() == 2) {
+                s.*std::get<2>(it->second) = "hello";
+            }
+        }
+    }
+}
+static void string_access(bm::State &state) {
+    S s{};
+    for (auto _: state) {
+        std::string field = "f7";
+        s.apply(field, 1);
+    }
+}
+
+BENCHMARK(static_map_access);
+BENCHMARK(direct_access);
+BENCHMARK(unordered_map_access);
+BENCHMARK(string_access);
+
+
+BENCHMARK_MAIN();
