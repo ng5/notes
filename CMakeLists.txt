@@ -47,3 +47,23 @@ if (UNIX)
         target_link_libraries("benchmarks_${x}" -static-libgcc -static-libstdc++ benchmark dl pthread)
     endforeach ()
 endif ()
+list(APPEND NON_DISTRIBUTABLES_PRE
+        [[api-ms-win-.*]]
+        [[ext-ms-.*]]
+        [[kernel32\.dll]]
+        [[.*/system32/.*\.dll]]
+        [[libc\.so\..*]]
+        [[libm\.so\..*]]
+        [[librt\.so\..*]]
+        [[libdl\.so\..*]]
+        [[libpthread\.so\..*]]
+        [[^/lib.*]]
+        [[^ld-linux.*]]
+        [[^/lib64.*]]
+        [[^/usr/lib.*]]
+        [[^/usr/lib64.*]]
+)
+list(APPEND NON_DISTRIBUTABLES_POST
+        [[.*/system32/.*\.dll]]
+)
+install(RUNTIME_DEPENDENCY_SET APP_DEPS PRE_EXCLUDE_REGEXES ${NON_DISTRIBUTABLES_PRE} POST_EXCLUDE_REGEXES ${NON_DISTRIBUTABLES_POST})
