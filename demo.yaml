@@ -1,0 +1,22 @@
+# test locally by act
+# act -s GITHUB_TOKEN=$GITHUB_TOKEN -P self-hosted=-self-hosted
+name: build
+run-name: ${{ github.actor }} is building our project
+on: [push]
+env:
+  TARGET: cpp-project
+jobs:
+  build-actions:
+    runs-on: self-hosted
+    steps:
+      - name: checkout release scripts
+        uses: actions/checkout@v4
+        with:
+          repository: xyz/release
+          path: release
+      - name: Check out repository code
+        uses: actions/checkout@v4
+        with:          
+          path: ${{ env.TARGET }}
+      - name: List files in the repository
+        run: ./release/Build.sh "$TARGET"
