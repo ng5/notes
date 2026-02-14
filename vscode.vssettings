@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<UserSettings>
+  <ApplicationIdentity version="17.0" />
+
+  <ToolsOptions>
+    <ToolsOptionsCategory name="Environment" RegisteredName="Environment" />
+  </ToolsOptions>
+
+  <Category name="Environment_Group" RegisteredName="Environment_Group">
+    <Category name="Environment_KeyBindings"
+      Category="{F09035F1-80D2-4312-8EC4-4D354A4BCB4C}"
+      Package="{DA9FB551-C724-11d0-AE1F-00A0C90FFFC3}"
+      RegisteredName="Environment_KeyBindings"
+      PackageName="Visual Studio Environment Package">
+
+      <Version>17.0.0.0</Version>
+
+      <KeyboardShortcuts>
+        <ScopeDefinitions>
+          <Scope Name="Global" ID="{5EFC7975-14BC-11CF-9B2B-00AA00573819}" />
+        </ScopeDefinitions>
+
+        <UserShortcuts>
+
+          <!-- ===== VS CODE COMMAND PALETTE EQUIV ===== -->
+          <Shortcut Command="View.QuickLaunch" Scope="Global">Ctrl+Shift+P</Shortcut>
+
+          <!-- ===== QUICK OPEN / NAV ===== -->
+          <Shortcut Command="Edit.GoToFile" Scope="Global">Ctrl+P</Shortcut>
+          <Shortcut Command="Edit.GoToDefinition" Scope="Global">F12</Shortcut>
+          <Shortcut Command="Edit.PeekDefinition" Scope="Global">Alt+F12</Shortcut>
+          <Shortcut Command="View.NavigateBackward" Scope="Global">Alt+Left Arrow</Shortcut>
+          <Shortcut Command="View.NavigateForward" Scope="Global">Alt+Right Arrow</Shortcut>
+          <Shortcut Command="Refactor.Rename" Scope="Global">F2</Shortcut>
+
+          <!-- ===== SEARCH ===== -->
+          <Shortcut Command="Edit.Find" Scope="Global">Ctrl+F</Shortcut>
+          <Shortcut Command="Edit.FindinFiles" Scope="Global">Ctrl+Shift+F</Shortcut>
+          <Shortcut Command="Edit.Replace" Scope="Global">Ctrl+H</Shortcut>
+          <Shortcut Command="Edit.ReplaceinFiles" Scope="Global">Ctrl+Shift+H</Shortcut>
+
+          <!-- ===== SIDEBAR / PANELS ===== -->
+          <!-- VS Code: Ctrl+B toggle sidebar (VS shows/focuses; works best with Auto Hide) -->
+          <Shortcut Command="View.SolutionExplorer" Scope="Global">Ctrl+B</Shortcut>
+
+          <!-- VS Code: Ctrl+0 focus sidebar -->
+          <Shortcut Command="View.SolutionExplorer" Scope="Global">Ctrl+0</Shortcut>
+
+          <!-- VS Code: Ctrl+1 focus editor -->
+          <Shortcut Command="Window.ActivateDocumentWindow" Scope="Global">Ctrl+1</Shortcut>
+
+          <!-- VS Code: problems panel analogue -->
+          <Shortcut Command="View.ErrorList" Scope="Global">Ctrl+Shift+M</Shortcut>
+
+          <!-- Output panel (handy) -->
+          <Shortcut Command="View.Output" Scope="Global">Ctrl+Alt+O</Shortcut>
+
+          <!-- Terminal -->
+          <Shortcut Command="View.Terminal" Scope="Global">Ctrl+`</Shortcut>
+
+          <!-- ===== EDITOR GROUPS / SPLITS (TAB GROUPS) ===== -->
+          <!-- VS Code: Ctrl+\ split editor -->
+          <Shortcut Command="Window.SplitWindowVertically" Scope="Global">Ctrl+\</Shortcut>
+          <Shortcut Command="Window.SplitWindowHorizontally" Scope="Global">Ctrl+Shift+\</Shortcut>
+
+          <!-- VS Code: Ctrl+2 / Ctrl+3 focus 2nd/3rd group (best VS equivalent: cycle tab groups) -->
+          <Shortcut Command="Window.NextTabGroup" Scope="Global">Ctrl+2</Shortcut>
+          <Shortcut Command="Window.PreviousTabGroup" Scope="Global">Ctrl+3</Shortcut>
+
+          <!-- ===== MULTI CURSOR ===== -->
+          <Shortcut Command="Edit.InsertNextMatchingCaret" Scope="Global">Ctrl+D</Shortcut>
+          <Shortcut Command="Edit.InsertCaretsatAllMatching" Scope="Global">Ctrl+Shift+L</Shortcut>
+
+          <!-- ===== EDITING ===== -->
+          <Shortcut Command="Edit.ToggleLineComment" Scope="Global">Ctrl+/</Shortcut>
+          <Shortcut Command="Edit.FormatDocument" Scope="Global">Shift+Alt+F</Shortcut>
+
+          <Shortcut Command="Edit.MoveSelectedLinesUp" Scope="Global">Alt+Up Arrow</Shortcut>
+          <Shortcut Command="Edit.MoveSelectedLinesDown" Scope="Global">Alt+Down Arrow</Shortcut>
+          <Shortcut Command="Edit.Duplicate" Scope="Global">Shift+Alt+Down Arrow</Shortcut>
+          <Shortcut Command="Edit.LineDelete" Scope="Global">Ctrl+Shift+K</Shortcut>
+
+          <!-- ===== COLUMN SELECTION (VS CODE STYLE) ===== -->
+          <Shortcut Command="Edit.LineUpExtendColumn" Scope="Global">Ctrl+Shift+Alt+Up Arrow</Shortcut>
+          <Shortcut Command="Edit.LineDownExtendColumn" Scope="Global">Ctrl+Shift+Alt+Down Arrow</Shortcut>
+          <Shortcut Command="Edit.CharLeftExtendColumn" Scope="Global">Ctrl+Shift+Alt+Left Arrow</Shortcut>
+          <Shortcut Command="Edit.CharRightExtendColumn" Scope="Global">Ctrl+Shift+Alt+Right Arrow</Shortcut>
+
+          <!-- ===== FILE / WINDOW ===== -->
+          <Shortcut Command="Window.CloseDocument" Scope="Global">Ctrl+W</Shortcut>
+
+          <!-- VS Code: Close all editors -->
+          <Shortcut Command="Window.CloseAllDocuments" Scope="Global">Ctrl+K, Ctrl+W</Shortcut>
+
+          <!-- VS Code: Reopen closed editor -->
+          <Shortcut Command="Window.UndoCloseDocument" Scope="Global">Ctrl+Shift+T</Shortcut>
+
+          <!-- ===== BUILD / DEBUG ===== -->
+          <Shortcut Command="Build.BuildSolution" Scope="Global">Ctrl+Shift+B</Shortcut>
+          <Shortcut Command="Debug.Start" Scope="Global">F5</Shortcut>
+          <Shortcut Command="Debug.StopDebugging" Scope="Global">Shift+F5</Shortcut>
+          <Shortcut Command="Debug.StepOver" Scope="Global">F10</Shortcut>
+          <Shortcut Command="Debug.StepInto" Scope="Global">F11</Shortcut>
+          <Shortcut Command="Debug.StepOut" Scope="Global">Shift+F11</Shortcut>
+
+        </UserShortcuts>
+      </KeyboardShortcuts>
+
+    </Category>
+  </Category>
+</UserSettings>
