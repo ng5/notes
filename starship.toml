@@ -1,0 +1,52 @@
+add_newline = false
+format = "$custom$character"
+
+[hostname]
+disabled = true
+
+[line_break]
+disabled = true
+
+[custom.hostname_ssh]
+command = '''
+name=$(uname -n)
+printf '%s' "${name%%.*}"
+'''
+when = "test -n \"$SSH_CONNECTION\""
+shell = ["sh"]
+format = "[ $output ]($style) "
+style = "bold white bg:red"
+
+[custom.hostname_local]
+command = '''
+name=$(uname -n)
+printf '%s' "${name%%.*}"
+'''
+when = "test -z \"$SSH_CONNECTION\""
+shell = ["sh"]
+format = "[$output]($style) "
+style = "bold black bg:blue"
+
+[custom.git_summary]
+command = '''
+branch=$(git symbolic-ref --quiet --short HEAD 2>/dev/null || git rev-parse --short HEAD)
+age=$(git log -1 --format=%cr 2>/dev/null || printf 'no commits')
+printf '%s · %s' "$branch" "$age"
+'''
+when = "git rev-parse --is-inside-work-tree >/dev/null 2>&1"
+shell = ["sh"]
+format = "[$output]($style) "
+style = "bold purple"
+
+[custom.non_git_directory]
+command = '''
+if [ "$PWD" = "$HOME" ]; then
+    printf '~'
+else
+    basename "$PWD"
+fi
+'''
+when = "! git rev-parse --is-inside-work-tree >/dev/null 2>&1"
+shell = ["sh"]
+format = "[$output]($style) "
+style = "bold cyan"
